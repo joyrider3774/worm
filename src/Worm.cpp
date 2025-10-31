@@ -14,7 +14,7 @@
 #include <time.h>
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
-#include "Cinput.h"
+#include "CInput.h"
 #include "Worm.h"
 #include "SaveData.h"
 #include "GameFuncs.h"
@@ -489,7 +489,6 @@ void gameFrame()
     }
     else
     {
-    //    set_multiply_color(color_white);
         strcpy(Text, "WORM\n\nPress A To Play GAME A\nClick Here to Play GAME A");
         Text[27] = (int)'A' + gameMode;
         Text[53] = (int)'A' + gameMode;
