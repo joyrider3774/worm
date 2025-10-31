@@ -467,7 +467,12 @@ void gameFrame()
                 moveCollectibles();
             movePlayer();
             if (!playing)
+            {
                 SaveSavedData();
+                //try to prevent accidental new game starts
+                Input->Reset();
+                Input->Delay();                
+            }
         }
         else
         {
