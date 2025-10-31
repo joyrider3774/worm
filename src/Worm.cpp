@@ -726,7 +726,7 @@ int main(int argc, char **argv)
 				WINDOW_HEIGHT = SDL_atoi(argv[i+1]);
 	}
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
+	if (SDL_Init(SDL_INIT_VIDEO))
 	{
 		logMessage("SDL Succesfully initialized\n");
 
@@ -832,7 +832,7 @@ int main(int argc, char **argv)
 			logMessage("Failed to create window %dx%d\n",WINDOW_WIDTH, WINDOW_HEIGHT);
 		}
 		
-		SDL_QuitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+		SDL_QuitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_VIDEO);
 		SDL_Quit();
 	}
 	else
