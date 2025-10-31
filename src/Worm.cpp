@@ -729,7 +729,9 @@ int main(int argc, char **argv)
 	if (SDL_Init(SDL_INIT_VIDEO))
 	{
 		logMessage("SDL Succesfully initialized\n");
-
+        #ifdef __EMSCRIPTEN__
+        SDL_SetHint(SDL_HINT_EMSCRIPTEN_FILL_DOCUMENT, "1");
+        #endif
 		memset(basePath, 0, FILENAME_MAX);
 		const char* SDL_BasePath = SDL_GetBasePath();
 		if(SDL_BasePath)
@@ -769,7 +771,7 @@ int main(int argc, char **argv)
 				}
 				logMessage("Available Renders: %s\n",RenderDriverNames);
 				logMessage("Succesfully Created Buffer\n");					
-
+                SDL_SetRenderLogicalPresentation(Renderer, ScreenWidth, ScreenHeight, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 				Buffer = SDL_CreateTexture(Renderer, PIXELFORMAT, SDL_TEXTUREACCESS_TARGET, ScreenWidth, ScreenHeight);
 				if (Buffer)
 				{
