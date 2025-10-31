@@ -448,6 +448,13 @@ void gameFrame()
     colorWhite.g = 92;
     colorWhite.b = 92;
     Input->Update();
+    if (Input->Ready() && (((Input->KeyboardHeld(SDLK_LALT) || Input->KeyboardHeld(SDLK_RALT)) && Input->KeyboardHeld(SDLK_RETURN)) ||
+        Input->KeyboardHeld(SDLK_F) || Input->JoystickHeld(0,3)))
+    {
+        fullScreen = !fullScreen;
+        SDL_SetWindowFullscreen(SdlWindow, fullScreen);
+        Input->Delay();
+    }
     drawBackGround();
     drawTunnel();
     if((gameMode == 0) || (gameMode == 2))
