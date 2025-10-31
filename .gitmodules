@@ -1,0 +1,6 @@
+[submodule "Vendored/SDL3"]
+	path = Vendored/SDL3
+	url = https://github.com/libsdl-org/SDL.git
+[submodule "Vendored/SDL_ttf"]
+	path = Vendored/SDL_ttf
+	url = https://github.com/libsdl-org/SDL_ttf.git
