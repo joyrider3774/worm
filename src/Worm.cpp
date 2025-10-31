@@ -587,12 +587,13 @@ void gameFrame()
     if(showfps)
     {
         char fpsText[100];
-        sprintf(fpsText, "FPS: %.2f\n", avgfps);
+        sprintf(fpsText, "FPS:%.2f", avgfps);
+        TTF_GetStringSize(MonoFont, fpsText, strlen(fpsText), &w, &h);
         SDL_FRect Rect;
         Rect.x = 0.0f;
         Rect.y = 0.0f;
-        Rect.w = 100.0f;
-        Rect.h = (float)TTF_GetFontHeight(MonoFont);
+        Rect.w = (float)w;
+        Rect.h = (float)h;
         SDL_SetRenderDrawColor(Renderer, 255,255,255,255);
         SDL_RenderFillRect(Renderer, &Rect);
         SDL_Color col = {0,0,0,255};
