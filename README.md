@@ -30,7 +30,7 @@ This is my worm game in SDL3, which is a remake of the classic copter / worm gam
 | LEFT/RIGHT | Select Game Mode on Titlescreen               |
 | UP/DOWN    | Select Seed,                                  |
 | L/B        | Select Seed, increases by 15                  |        
-| START      | Holding Start for half a second resets scores |
+| START      | Reset scores                                  |
 
 ## Aim of the game
 Repeadetly Press / hold A button to move the worm around, dont hit obstacles and walls, try to gain highest score.
