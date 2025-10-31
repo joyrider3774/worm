@@ -235,7 +235,7 @@ void movePlayer()
 void createTunnel()
 {
     //grab a height
-    int top_height = rand() % (tunnelPlayableGap);
+    int top_height =  randint(0, tunnelPlayableGap);
     
     for(int i = 0; i <= ceil(ScreenWidth / tunnelSectionWidth); i++)
     {
@@ -364,9 +364,9 @@ void moveTunnel()
 void startGame(int mode)
 {
     if (seed == 0)
-        srand(SDL_GetTicks());
+        SDL_srand(SDL_GetTicks());
     else
-        srand(seed);
+        SDL_srand(seed);
     playerSpeed = 0;
     tunnelPlayableGap = StartTunnelPlayableGap;
     score = 0;
@@ -774,7 +774,7 @@ int main(int argc, char **argv)
 							logMessage("Succesfully Loaded fonts\n");
 							TTF_SetFontStyle(MonoFont,TTF_STYLE_BOLD);
                             LoadSavedData();
-	                        srand(SDL_GetTicks());
+	                        SDL_srand(SDL_GetTicks());
                             createTunnel();
 							Input = new CInput(InputDelay, disableJoysticks);
 							#ifdef __EMSCRIPTEN__

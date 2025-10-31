@@ -89,5 +89,5 @@ int ord(char chr)
 
 int randint(int min, int max)
 {
-    return (rand() % (max - min)) + min;
+    return SDL_rand(max - min) + min;
 }
