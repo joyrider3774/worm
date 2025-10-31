@@ -87,7 +87,7 @@ jobs:
           cmake -G "Ninja" -DUSE_VENDORED_SDL=1 ..
           ninja
           
-      - if: ${{ matrix.runsontype != 'windows'}}
+      - if: ${{ matrix.runsontype != 'windows' && matrix.runsontype != 'emscripten'}}
         name: Build Game Other
         run: |
           mkdir build
@@ -96,7 +96,7 @@ jobs:
           make
       
       - if: ${{ matrix.runsontype == 'emscripten'}}
-        name: install libsdl 2/3 dependencies
+        name: build
         run: |
           git clone https://github.com/emscripten-core/emsdk.git
           cd emsdk
@@ -106,7 +106,7 @@ jobs:
           cd ..
           mkdir build
           cd build
-          emcmake cmake -DUSE_VENDORED_SDL=1 -DSDLTTF_VENDORED=1 -S .. -B .
+          emcmake cmake -DUSE_VENDORED_SDL=1 -DSDLTTF_VENDORED=1 -S ..
           emmake make
           cd ..
           cp ./build/Worm.* ./html
