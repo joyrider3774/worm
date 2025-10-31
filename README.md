@@ -14,13 +14,14 @@ This is my worm game in SDL3, which is a remake of the classic copter / worm gam
 
 ## Controls Keyboard
 
-| Key        | Action                                        |
-|------------|-----------------------------------------------|
-| A/SPACE    | Start GAME, Repeadetly tap to move Worm       |
-| LEFT/RIGHT | Select Game Mode on Titlescreen               |
-| UP/DOWN    | Select Seed, increases by 15 when hold        |
-| L/B        | Select Seed, increases by 15                  |        
-| R          | Reset scores                                  |
+| Key         | Action                                        |
+|-------------|-----------------------------------------------|
+| A/SPACE     | Start GAME, Repeadetly tap to move Worm       |
+| LEFT/RIGHT  | Select Game Mode on Titlescreen               |
+| UP/DOWN     | Select Seed, increases by 15 when hold        |
+| L/B         | Select Seed, increases by 15                  |        
+| R           | Reset scores                                  |
+| F/ATL+ENTER | Switch to fullscreen                          |
 
 ## Controls XBox Controller
 
@@ -31,6 +32,7 @@ This is my worm game in SDL3, which is a remake of the classic copter / worm gam
 | UP/DOWN    | Select Seed,                                  |
 | L/B        | Select Seed, increases by 15                  |        
 | START      | Reset scores                                  |
+| Y          | Switch to fullscreen                                   |
 
 ## Aim of the game
 Repeadetly Press / hold A button to move the worm around, dont hit obstacles and walls, try to gain highest score.
