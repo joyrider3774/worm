@@ -1,17 +1,35 @@
 # Worm
 ![DownloadCountTotal](https://img.shields.io/github/downloads/joyrider3774/worm/total?label=total%20downloads&style=plastic) ![DownloadCountLatest](https://img.shields.io/github/downloads/joyrider3774/worm/latest/total?style=plastic) ![LatestVersion](https://img.shields.io/github/v/tag/joyrider3774/worm?label=Latest%20version&style=plastic) ![License](https://img.shields.io/github/license/joyrider3774/worm?style=plastic)
 
-![screenshot 1](screenshots/screenshot1.png)  ![screenshot 2](screenshots/screenshot2.png)
+![screenshot 1](screenshots/screenshot1.png)
 
 This is my worm game in SDL3, which is a remake of the classic copter / worm game with multiple gameplay modes
 
-## Controls
+## Mouse Controls
+
+| Button     | Action                                                              |
+|------------|---------------------------------------------------------------------|
+| LEFT       | Start GAME when pressed in upper & middle part, Repeadetly tap to move Worm. If pressed in lower part increases seed |
+| RIGHT      | Select Game Mode on Titlescreen when pressed in upper & middle part. If pressed in lower part increases seed by 15 |
+
+## Controls Keyboard
 
 | Key        | Action                                        |
 |------------|-----------------------------------------------|
+| A/SPACE    | Start GAME, Repeadetly tap to move Worm       |
+| LEFT/RIGHT | Select Game Mode on Titlescreen               |
+| UP/DOWN    | Select Seed, increases by 15 when hold        |
+| L/B        | Select Seed, increases by 15                  |        
+| R          | Reset scores                                  |
+
+## Controls XBox Controller
+
+| Button     | Action                                        |
+|------------|-----------------------------------------------|
 | A          | Start GAME, Repeadetly tap to move Worm       |
 | LEFT/RIGHT | Select Game Mode on Titlescreen               |
-| L/B        | Select Seed, increases by 15 when hold        |
+| UP/DOWN    | Select Seed,                                  |
+| L/B        | Select Seed, increases by 15                  |        
 | START      | Holding Start for half a second resets scores |
 
 ## Aim of the game
