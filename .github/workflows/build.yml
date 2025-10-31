@@ -19,6 +19,7 @@ jobs:
           - { runson: 'macos-13',         runsontype: 'mac',        sys: 'usr',     env: 'intel',  name: 'Worm', binsuffix: '',     }
           - { runson: 'macos-14',         runsontype: 'mac',        sys: 'usr',     env: 'arm64',  name: 'Worm', binsuffix: '',     }
           - { runson: 'macos-15',         runsontype: 'mac',        sys: 'usr',     env: 'arm64',  name: 'Worm', binsuffix: '',     }
+          - { runson: 'macos-26',         runsontype: 'mac',        sys: 'usr',     env: 'arm64',  name: 'Worm', binsuffix: '',     }
           - { runson: 'ubuntu-24.04',     runsontype: 'emscripten', sys: 'usr',     env: 'web',    name: 'Worm', binsuffix: '',     }
 
     runs-on: ${{matrix.runson}}    
