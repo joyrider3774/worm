@@ -18,8 +18,8 @@ This is my worm game in SDL3, which is a remake of the classic copter / worm gam
 |-------------|-----------------------------------------------|
 | A/SPACE     | Start GAME, Repeadetly tap to move Worm       |
 | LEFT/RIGHT  | Select Game Mode on Titlescreen               |
-| UP/DOWN     | Select Seed, increases by 15 when hold        |
-| L/B         | Select Seed, increases by 15                  |        
+| UP/DOWN     | Select Seed, increases by 1                   |
+| PAGEUP/DOWN | Select Seed, increases by 15                  |        
 | R           | Reset scores                                  |
 | F/ATL+ENTER | Switch to fullscreen                          |
 
@@ -29,7 +29,7 @@ This is my worm game in SDL3, which is a remake of the classic copter / worm gam
 |------------|-----------------------------------------------|
 | A          | Start GAME, Repeadetly tap to move Worm       |
 | LEFT/RIGHT | Select Game Mode on Titlescreen               |
-| UP/DOWN    | Select Seed,                                  |
+| UP/DOWN    | Select Seed, increases by 1                   |
 | L/B        | Select Seed, increases by 15                  |        
 | START      | Reset scores                                  |
 | Y          | Switch to fullscreen                                   |
