@@ -391,7 +391,7 @@ void moveTunnel()
 void fixed_SDL_srand(Uint64 aseed)
 {
     SDL_srand(aseed);
-    SDL_rand(INT_MAX);
+    SDL_rand(2000000);
 }
 
 void startGame(int mode)
