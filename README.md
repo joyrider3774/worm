@@ -100,4 +100,9 @@ The game was made possible after watching this youtube movie: [https://www.youtu
 - Can increase game mode by left clicking on score as well (handy for phones)
 
 ### V1.1
-- initial release
+- Fixed bug where using same seed and same game mode on different platforms did not produce same levels
+- Added Fullscreen switching with F or ALT + ENTER
+- Added code to prevent accidental (re)starts of a game
+- Web version will now scale to document size, making it able to run fullscreen as well as on different mobile phones
+- Added macos-26 build
+- Added macos-15-intel build
