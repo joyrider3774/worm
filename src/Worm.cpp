@@ -19,10 +19,10 @@
 #include "SaveData.h"
 #include "GameFuncs.h"
 
-int score = 0, seed = 0, tunnelPlayableGap = StartTunnelPlayableGap, obstacleCount = 0, collectibleCount = 0, tunnelSpeed = StartTunnelSpeed;
-int tunnelSectionWidth = 8, tunnelSpacer = 16, gameMode = 0, speedTarget = StartSpeedTarget, startDelay=0, MaxObstacles = 4, MaxCollectibles = 3;
-float player_y = 0, playerSpeed = 0;
-SDL_FRect tunnelParts[ScreenWidth*2]; // in case spacing is 1
+int score = 0, numTunnelSections = 0, numVisibleTunnelSections = 0, selSeed = 0, seed = 1, tunnelPlayableGap = StartTunnelPlayableGap, obstacleCount = 0, collectibleCount = 0, tunnelSpeed = StartTunnelSpeed;
+int gameMode = 0, speedTarget = StartSpeedTarget, startDelay=0, MaxObstacles = 4, MaxCollectibles = 3;
+float player_y = 250, playerSpeed = 0;
+SDL_FRect tunnelParts[ScreenWidth*2 + OffScreenTunnelSections * 2]; // in case spacing is 1
 SDL_Point playerTrail[ScreenWidth];
 SDL_FRect obstacles[10];
 SDL_FRect collectibles[10];
@@ -56,7 +56,7 @@ void drawObstacles()
     SDL_SetRenderDrawColor(Renderer, 0, 255, 255, 255); 
     for(int i = 0; i < obstacleCount; i++)
         //don't draw not used obstacles
-        if((obstacles[i].x > 0) && (obstacles[i].y > 0))
+        if((obstacles[i].x > -ObstacleWidth) && (obstacles[i].y > 0))
             SDL_RenderFillRect(Renderer, &obstacles[i]);
 }
 
@@ -85,7 +85,7 @@ void moveObstacles()
 
                 //and create a new obstacle at the right side of the screen
                 obstacles[obstacleCount-1].x =  ScreenWidth;
-                obstacles[obstacleCount-1].y =  tunnelParts[(ScreenWidth / tunnelSectionWidth)*2].h + 10 + randint(0, tunnelPlayableGap - ObstacleHeight - 20);
+                obstacles[obstacleCount-1].y =  tunnelParts[numVisibleTunnelSections*2].h + randint(ObstacleSpaceFromTunnel, tunnelPlayableGap - ObstacleHeight - 2*ObstacleSpaceFromTunnel);
                 obstacles[obstacleCount-1].w = ObstacleWidth;
                 obstacles[obstacleCount-1].h = ObstacleHeight;
             }
@@ -93,11 +93,11 @@ void moveObstacles()
     }
 
     //when we have no obstacles or the last added obstacle is smaller than the spacing between obstacles from right side of screen
-    if ((obstacleCount == 0) || ((obstacleCount < MaxObstacles) && (obstacles[obstacleCount-1].x < ScreenWidth - (ScreenWidth / MaxObstacles))))
+    if ((obstacleCount == 0) || ((obstacleCount > 0) && (obstacleCount < MaxObstacles) && (obstacles[obstacleCount-1].x < ScreenWidth - (ScreenWidth / MaxObstacles))))
     {
-        //add a new obstacles (then 10 and 20 is to always add a spacing between tunnel wall the obstacle)
+        //add a new obstacles
         obstacles[obstacleCount].x =  ScreenWidth;
-        obstacles[obstacleCount].y =  tunnelParts[(ScreenWidth / tunnelSectionWidth)*2].h + 10 + randint(0, tunnelPlayableGap - ObstacleHeight - 20);
+        obstacles[obstacleCount].y =  tunnelParts[numVisibleTunnelSections*2].h + randint(ObstacleSpaceFromTunnel, tunnelPlayableGap - ObstacleHeight - 2* ObstacleSpaceFromTunnel);
         obstacles[obstacleCount].w = ObstacleWidth;
         obstacles[obstacleCount].h = ObstacleHeight;
         obstacleCount++;
@@ -123,11 +123,11 @@ void moveCollectibles()
         collectibles[i].x -= tunnelSpeed;
 
     //when we have no collectible or the last added collectible is smaller than the spacing between collectible from right side of screen
-    if ((collectibleCount == 0) || ((collectibleCount < MaxCollectibles) && (collectibles[collectibleCount-1].x < ScreenWidth - ((ScreenWidth - player_x) / MaxCollectibles))))
+    if ((collectibleCount == 0) || ((collectibleCount > 0) && (collectibleCount < MaxCollectibles) && (collectibles[collectibleCount-1].x < ScreenWidth - ((ScreenWidth - player_x) / MaxCollectibles))))
     {
-        //add a new collectible (then 10 and 20 is to always add a spacing between tunnel wall the collectible)
+        //add a new collectible
         collectibles[collectibleCount].x =  ScreenWidth;
-        collectibles[collectibleCount].y =  tunnelParts[(ScreenWidth / tunnelSectionWidth)*2].h + 20 + randint(0, tunnelPlayableGap - CollectibleHeight - 40);
+        collectibles[collectibleCount].y =  tunnelParts[numVisibleTunnelSections*2].h + randint(CollectibleSpaceFromTunnel, tunnelPlayableGap - CollectibleHeight - 2 * CollectibleSpaceFromTunnel);
         collectibles[collectibleCount].w = CollectibleWidth;
         collectibles[collectibleCount].h = CollectibleHeight;
         collectibleCount++;
@@ -182,19 +182,25 @@ void movePlayer()
     playerTrail[player_x].x = player_x;
     playerTrail[player_x].y = player_y;
 
+    SDL_FRect playerRect;
+    playerRect.x = player_x -2;
+    playerRect.y = player_y -2;
+    playerRect.w = PlayerWidthHeight;
+    playerRect.h = PlayerWidthHeight;
+    
+
+    int playerTunnelSection = player_x / tunnelSectionWidth*2;
     //player is inside tunnel section
-    for (int i = 0; i < ScreenWidth / tunnelSectionWidth*2; i ++)
+    for (int i = playerTunnelSection -4; i <= playerTunnelSection + 4; i++)
     {
-        if ((player_x -2 >= tunnelParts[i].x) && (player_x + 2 <= tunnelParts[i].x + tunnelParts[i].w) &&
-            (player_y -2 >= tunnelParts[i].y) && (player_y +2 <= tunnelParts[i].y + tunnelParts[i].h))
+        if (checkCollision(&playerRect, &tunnelParts[i]))
             playing = false;
     }
 
     //player is inside obstacle
     for (int i = 0; i < MaxObstacles; i++)
     {
-        if ((player_x -2 >= obstacles[i].x) && (player_x +2 <= obstacles[i].x + obstacles[i].w) &&
-            (player_y -2 >= obstacles[i].y) && (player_y +2 <= obstacles[i].y + obstacles[i].h))
+        if (checkCollision(&playerRect, &obstacles[i]))
             playing = false;
     }
 
@@ -202,8 +208,9 @@ void movePlayer()
     for (int i = 0; i < MaxCollectibles; i++)
     {
         //player is inside collectible (added )
-        if ((player_x >= collectibles[i].x) && (player_x <= collectibles[i].x + collectibles[i].w) &&
-            (player_y >= collectibles[i].y) && (player_y <= collectibles[i].y + collectibles[i].h))
+        if (checkCollision(&playerRect, &collectibles[i]))
+        //debug
+        //if (player_x > collectibles[i].x + collectibles[i].w)
         {
             //erase it from the array by moving all other obstalces one position down
             for (int j = 0; j < collectibleCount; j++)
@@ -213,10 +220,13 @@ void movePlayer()
             }
 
             //and create a new obstacle at the right side of the screen
-            collectibles[collectibleCount-1].x =  ScreenWidth;
-            collectibles[collectibleCount-1].y =  tunnelParts[(ScreenWidth / tunnelSectionWidth)*2].h + 10 + randint(0, tunnelPlayableGap - CollectibleHeight - 20);
-            collectibles[collectibleCount-1].w = CollectibleWidth;
-            collectibles[collectibleCount-1].h = CollectibleHeight;
+            if (collectibleCount > 0)
+            {
+                collectibles[collectibleCount - 1].x = ScreenWidth;
+                collectibles[collectibleCount - 1].y = tunnelParts[numVisibleTunnelSections * 2].h + randint(CollectibleSpaceFromTunnel, tunnelPlayableGap - CollectibleHeight - 2 * CollectibleSpaceFromTunnel);
+                collectibles[collectibleCount - 1].w = CollectibleWidth;
+                collectibles[collectibleCount - 1].h = CollectibleHeight;
+            }
         }
 
         //collectible is futher away than playerx (player missed to pick it up)
@@ -237,7 +247,7 @@ void createTunnel()
     //grab a height
     int top_height =  randint(0, tunnelPlayableGap);
     
-    for(int i = 0; i <= ceil(ScreenWidth / tunnelSectionWidth); i++)
+    for(int i = 0; i <= numTunnelSections; i++)
     {
         //grab a height based on previous height with tunnelSpacer deviation of height
         top_height = randint(top_height - tunnelSpacer, top_height + tunnelSpacer);        
@@ -252,7 +262,7 @@ void createTunnel()
         }
         
         //set player y position based on tunnel section where player is
-        if((i * tunnelSectionWidth < player_x) && ((i+1) * tunnelSectionWidth > player_x))
+        if((i * tunnelSectionWidth <= player_x) && ((i+1) * tunnelSectionWidth >= player_x))
             player_y = top_height + tunnelPlayableGap / 2;
 
         //top of tunnel
@@ -273,7 +283,7 @@ void drawTunnel()
 {
     //set green color
     SDL_SetRenderDrawColor(Renderer, 0, 255, 0, 255);
-    for(int i = 0; i <= ceil(ScreenWidth / tunnelSectionWidth) * 2; i += 2)
+    for(int i = 0; i <= numTunnelSections * 2; i += 2)
     {
         SDL_RenderFillRect(Renderer, &tunnelParts[i]);
         SDL_RenderFillRect(Renderer, &tunnelParts[i+1]);
@@ -283,7 +293,7 @@ void drawTunnel()
 void moveTunnel()
 {
     //for every tunnel section
-    for(int j = 0; j <= ceil(ScreenWidth / tunnelSectionWidth); j++)
+    for(int j = 0; j <= numTunnelSections; j++)
     {
         //move top & bottom tunnel part
         tunnelParts[j*2].x = tunnelParts[j*2].x - tunnelSpeed;
@@ -292,14 +302,18 @@ void moveTunnel()
     
     bool increaseTunnelSpeed = false;
 
-    //for every tunnel section
-    for(int j = 0; j <= ceil(ScreenWidth / tunnelSectionWidth); j++)
+    for (int j = 0; j < numTunnelSections * 2; j++)
     {
-        //if tunnel section is offscreen on the left
-        if (tunnelParts[j*2].x + tunnelSectionWidth <= 0)
+        
+        //if tunnel section are back on screen, break out of loop
+        //tunnel sections are kept from left to right (lowest x)
+        if (tunnelParts[j].x + tunnelSectionWidth >= 0)
+            break;
+        else
+        //if left most tunnel sections is offscreen on the left
         {
             //erase that section from the arrray by moving all other section down in the array
-            for (int i = 0; i <= ceil(ScreenWidth / tunnelSectionWidth);i++)
+            for (int i = 0; i <= numTunnelSections;i++)
             {
                 tunnelParts[i*2].x = tunnelParts[i*2+2].x;
                 tunnelParts[i*2].y = tunnelParts[i*2+2].y;
@@ -312,10 +326,17 @@ void moveTunnel()
             }
 
             //create new piece at the end of the array
-            int lastElement = ceil(ScreenWidth / tunnelSectionWidth)*2;
-            int top_height = randint(tunnelParts[lastElement-2].h - tunnelSpacer, tunnelParts[lastElement-2].h + tunnelSpacer);
+            int lastElement = numTunnelSections * 2;
+            
+            // place the new section exactly after the current rightmost
+            int newX = tunnelParts[lastElement - 2].x + tunnelSectionWidth;
 
-            //make sure it does not exceed our playable gap
+            // --- randomize top height (clamped as before) ---
+            int top_height = randint(
+                tunnelParts[lastElement - 2].h - tunnelSpacer,
+                tunnelParts[lastElement - 2].h + tunnelSpacer
+            );
+
             if (top_height < 0)
                 top_height = 0;
             else
@@ -324,22 +345,27 @@ void moveTunnel()
                     top_height = tunnelPlayableGap;
             }
 
-            //top of tunnel
-            tunnelParts[lastElement].x = (lastElement/2) * tunnelSectionWidth;
+            // --- assign new top & bottom tunnel parts ---
+            tunnelParts[lastElement].x = newX;
             tunnelParts[lastElement].y = 0;
-            tunnelParts[lastElement].w = tunnelSectionWidth + tunnelSpeed;
+            tunnelParts[lastElement].w = tunnelSectionWidth;
             tunnelParts[lastElement].h = top_height;
 
             //bottom of tunnel
-            tunnelParts[lastElement+1].x = (lastElement/2) * tunnelSectionWidth;
-            tunnelParts[lastElement+1].y = top_height + tunnelPlayableGap;
-            tunnelParts[lastElement+1].w = tunnelSectionWidth + tunnelSpeed;
-            tunnelParts[lastElement+1].h = ScreenHeight - top_height - tunnelPlayableGap;
-            
+            tunnelParts[lastElement + 1].x = newX;
+            tunnelParts[lastElement + 1].y = top_height + tunnelPlayableGap;
+            tunnelParts[lastElement + 1].w = tunnelSectionWidth;
+            tunnelParts[lastElement + 1].h = ScreenHeight - top_height - tunnelPlayableGap;
+
             //score increases with every section passed
             score += 1;
-            if(score > save.highScores[gameMode])
-                save.highScores[gameMode] = score; 
+            if (seed < maxSeed)
+            {
+                if (score > save.highScores[gameMode * maxSeed + seed])
+                    save.highScores[gameMode * maxSeed + seed] = score;
+            }
+            else if (score > save.highScores[gameMode * maxSeed])
+                save.highScores[gameMode * maxSeed] = score;
 
             //make tunnel smaller
             if((gameMode == 0) || (gameMode == 3))
@@ -352,8 +378,9 @@ void moveTunnel()
                 //if(tunnelSpeed < MaxTunnelSpeed)
                     if(score % (speedTarget) == 0)
                         increaseTunnelSpeed = true;
-        }        
-    }    
+        }
+    }
+
     if(increaseTunnelSpeed)
     {                        
         tunnelSpeed += 1;
@@ -361,12 +388,30 @@ void moveTunnel()
     }  
 }
 
+void fixed_SDL_srand(Uint64 aseed)
+{
+    SDL_srand(aseed);
+    SDL_rand(INT_MAX);
+}
+
 void startGame(int mode)
 {
-    if (seed == 0)
-        SDL_srand(SDL_GetTicks());
+    if (selSeed == 0)
+    {
+        fixed_SDL_srand(SDL_GetTicks());
+        seed = randint(2, maxSeed);
+    }
     else
-        SDL_srand(seed);
+    {
+        if (selSeed == 1)
+        {
+            fixed_SDL_srand(SDL_GetTicks());
+            seed = randint(2, 2000000);
+        }
+        else
+            seed = selSeed;
+    }
+    fixed_SDL_srand(seed);
     playerSpeed = 0;
     tunnelPlayableGap = StartTunnelPlayableGap;
     score = 0;
@@ -384,10 +429,13 @@ void startGame(int mode)
     if (gameMode == 4)
         MaxCollectibles = 3;
     //set some defaults in the arrays
-    for(int i = 0; i < ScreenWidth; i++)
+    for(int i = 0; i < ScreenWidth + OffScreenTunnelSections; i++)
     {
-        playerTrail[i].x = 0;
-        playerTrail[i].y = 0;
+        if(i < ScreenWidth)
+        {
+            playerTrail[i].x = 0;
+            playerTrail[i].y = 0;
+        }
         tunnelParts[i*2].x = 0;
         tunnelParts[i*2+1].x = 0;
         tunnelParts[i*2].w = 0;
@@ -442,6 +490,7 @@ void gameFrame()
     SDL_SetRenderTarget(Renderer, Buffer);
     char Text[250];
     char Text2[100];
+    char nr[100];
 	SDL_Color colorWhite;
     colorWhite.a = 255;
     colorWhite.r = 255;
@@ -506,9 +555,9 @@ void gameFrame()
         Text[53] = (int)'A' + gameMode;
         strcat(Text, "\nPress Direction To Change Mode\nPressing A Repeadetly\nwill keep the worm alive");
         WriteText(MonoFont, Text, strlen(Text), ScreenWidth / 2, ScreenBorderWidth, 1, colorWhite, true);
-        float MouseX = 0, MouseY = 0, TargetMouseY;
+        float MouseX = 0, MouseY = 0, TargetMouseY, TargetMouseX;
         SDL_GetMouseState(&MouseX, &MouseY);
-        SDL_RenderCoordinatesToWindow(Renderer, 0, 320, NULL, &TargetMouseY);
+        SDL_RenderCoordinatesToWindow(Renderer, 320, 320, &TargetMouseX, &TargetMouseY);
         if(Input->Ready() &&  (Input->JoystickHeld(0, 0) || Input->KeyboardHeld(SDLK_SPACE) || Input->KeyboardHeld(SDLK_A) || 
             Input->KeyboardHeld(SDLK_RETURN) || (Input->MouseHeld(0, SDL_BUTTON_LEFT) && (MouseY < TargetMouseY))))
         {
@@ -525,7 +574,9 @@ void gameFrame()
         }
 
         if(Input->Ready() &&  (Input->JoystickHeld(0, JOYSTICK_RIGHT) || Input->KeyboardHeld(SDLK_RIGHT) ||
-            (Input->MouseHeld(0, SDL_BUTTON_RIGHT) && (MouseY <  TargetMouseY))))
+            (Input->MouseHeld(0, SDL_BUTTON_RIGHT) && (MouseY <  TargetMouseY)) ||
+            (Input->MouseHeld(0, SDL_BUTTON_RIGHT) && (MouseY > TargetMouseY) && (MouseX > TargetMouseX)) ||
+            (Input->MouseHeld(0, SDL_BUTTON_LEFT) && (MouseY >  TargetMouseY) && (MouseX > TargetMouseX))))
         {
             Input->Delay();
             gameMode++;
@@ -536,41 +587,41 @@ void gameFrame()
         if(Input->Ready() &&  (Input->JoystickHeld(0, JOYSTICK_DOWN) || Input->KeyboardHeld(SDLK_DOWN)))
         {
             Input->Delay();
-            seed -= 1;
-            if(seed < 0)
-                seed = 0;
+            selSeed -= 1;
+            if(selSeed < 0)
+                selSeed = maxSeed-1;
         }
 
         if(Input->Ready() &&  (Input->JoystickHeld(0, JOYSTICK_UP) || Input->KeyboardHeld(SDLK_UP) ||
-            (Input->MouseHeld(0, SDL_BUTTON_LEFT) && (MouseY > TargetMouseY))))
+            (Input->MouseHeld(0, SDL_BUTTON_LEFT) && (MouseY > TargetMouseY) && (MouseX < TargetMouseX))))
         {
             Input->Delay();
-            seed += 1;
-            if(seed > 9999)
-                seed = 0;
+            selSeed += 1;
+            if(selSeed > maxSeed-1)
+            	selSeed = 0;
         }
 
         if(Input->Ready() &&  (Input->JoystickHeld(0, 4) || Input->KeyboardHeld(SDLK_PAGEDOWN)))
         {
             Input->Delay();
-            seed -= 15;
-            if(seed < 0)
-                seed = 9999;
+            selSeed -= 10;
+            if(selSeed < 0)
+            	selSeed =  maxSeed-1;
         }
 
-        if(Input->Ready() &&  (Input->JoystickHeld(0, 5) || Input->KeyboardHeld(SDLK_PAGEUP)) ||
-            (Input->MouseHeld(0, SDL_BUTTON_RIGHT) && (MouseY > TargetMouseY)))
+        if(Input->Ready() &&  (Input->JoystickHeld(0, 5) || Input->KeyboardHeld(SDLK_PAGEUP) ||
+            (Input->MouseHeld(0, SDL_BUTTON_RIGHT) && (MouseY > TargetMouseY) && (MouseX < TargetMouseX))))
         {
             Input->Delay();
-            seed += 15;
-            if(seed > 9999)
-                seed = 9999;
+            selSeed += 10;
+            if(selSeed > maxSeed-1)
+            	selSeed = 0; 
         }
 
         if(Input->Ready() &&  (Input->JoystickHeld(0, 7) || Input->KeyboardHeld(SDLK_R)))
         {
             Input->Delay();
-            for (int i = 0; i < MaxGameModes; i++)
+            for (int i = 0; i < MaxGameModes*maxSeed; i++)
                 save.highScores[i] = 0;
         }
 
@@ -579,11 +630,28 @@ void gameFrame()
             quit = true;
             
     }
-    strcpy(Text, "Seed:");
-    char nr[100];
-    SDL_itoa(seed, nr, 10);
-    strcat(Text, nr);
-    
+    strcpy(Text, "LVL:");
+       
+    if (selSeed == 0)
+	{
+		SDL_itoa(seed-1, nr, 10);
+		strcat(Text, nr);
+		strcat(Text, " RND1");
+	}
+	else
+    {
+        if (selSeed == 1)
+		{
+	    	SDL_itoa(seed-1, nr, 10);
+    		strcat(Text, nr);
+			strcat(Text, " RND2");
+		}
+        else
+        {
+	    	SDL_itoa(selSeed-1, nr, 10);
+    		strcat(Text, nr);
+		}
+    }
     int w, h;
     TTF_GetStringSize(MonoFont, Text, 0, &w, &h);
     WriteText(MonoFont, Text, strlen(Text), ScreenBorderWidth + 1, ScreenHeight -h , 1, colorWhite, false);
@@ -591,8 +659,17 @@ void gameFrame()
     SDL_itoa(score, nr, 10);
     strcat(Text, nr);
     strcat(Text, " H:");
-    SDL_itoa(save.highScores[gameMode], nr, 10);
-    strcat(Text, nr);
+    if (selSeed <= 1)
+    {
+        if (seed >= maxSeed)
+            SDL_itoa(save.highScores[gameMode * maxSeed], nr, 10);
+        else
+            SDL_itoa(save.highScores[gameMode * maxSeed + seed], nr, 10);
+    }
+    else if (selSeed > 1)
+   		SDL_itoa(save.highScores[gameMode * maxSeed + selSeed], nr, 10);
+    
+        strcat(Text, nr);
     TTF_GetStringSize(MonoFont, Text, 0, &w, &h);
     WriteText(MonoFont, Text, strlen(Text), ScreenWidth -2 -ScreenBorderWidth -w, ScreenHeight-h, 1, colorWhite, false);
        
@@ -679,7 +756,7 @@ static void printHelp(const char* exe)
 
 int main(int argc, char **argv)
 {
-	SDL_srand(SDL_GetTicks());
+	fixed_SDL_srand(time(NULL));
 	//attach to potential console when using -mwindows so we can get output in a cmd / msys prompt 
 	//but see no console window when running from explorer start menu or so
 	#if defined _WIN32 || defined __CYGWIN__
@@ -789,7 +866,10 @@ int main(int argc, char **argv)
 							logMessage("Succesfully Loaded fonts\n");
 							TTF_SetFontStyle(MonoFont,TTF_STYLE_BOLD);
                             LoadSavedData();
-	                        SDL_srand(SDL_GetTicks());
+	                        fixed_SDL_srand(time(NULL));
+                            //these never change and are used a lot in above functions
+                            numVisibleTunnelSections = ceil(ScreenWidth / tunnelSectionWidth);
+                            numTunnelSections = numVisibleTunnelSections + OffScreenTunnelSections;
                             createTunnel();
 							Input = new CInput(InputDelay, disableJoysticks);
 							#ifdef __EMSCRIPTEN__

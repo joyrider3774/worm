@@ -4,14 +4,14 @@
 #include "Worm.h"
 
 struct SaveData {
-	int highScores[MaxGameModes];
+	int highScores[MaxGameModes*maxSeed];
 };
 
 SaveData save;
 
 void LoadSavedData()
 {
-	for (int i = 0; i < MaxGameModes; i++)
+	for (int i = 0; i < MaxGameModes*maxSeed; i++)
 		save.highScores[i] = 0;
 	FILE *Fp;
 	char Filename[FILENAME_MAX];

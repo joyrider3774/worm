@@ -10,4 +10,7 @@ void WriteText(TTF_Font* FontIn,const char* Tekst,int NrOfChars,int X,int Y,int 
 char chr(int ascii);
 int ord(char chr);
 int randint(int min, int max);
+int checkCollision(SDL_FRect* r1, SDL_FRect* r2); 
+float min(float i, float j);
+float max(float i, float j);
 #endif

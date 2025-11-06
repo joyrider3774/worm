@@ -12,17 +12,24 @@
 #define ScreenHeight 360
 #define FPS 60
 
-#define ObstacleWidth 10
+#define ObstacleWidth 12
 #define ObstacleHeight 35
+#define ObstacleSpaceFromTunnel 10
+
+#define PlayerWidthHeight 5
 
 #define CollectibleWidth 20
 #define CollectibleHeight 20
+#define CollectibleSpaceFromTunnel 30
 
 #define StartTunnelSpeed 2
 #define StartTunnelPlayableGap 180
 #define TunnelMinimumPlayableGap 120
 #define MaxTunnelSpeed 7
+#define OffScreenTunnelSections 3
 
+#define tunnelSectionWidth 8
+#define tunnelSpacer 16
 #define StartSpeedTarget 50
 
 #define ScreenBorderWidth 7
@@ -32,6 +39,8 @@
 #define player_x 250
 
 #define MaxGameModes 5
+
+#define maxSeed 101
 
 // names for textures
 #define TextureFullFont 0

@@ -91,3 +91,31 @@ int randint(int min, int max)
 {
     return SDL_rand(max - min) + min;
 }
+
+float max(float i, float j)
+{
+    if(i > j)
+        return i;
+    else
+        return j;
+}
+
+float min(float i, float j)
+{
+    if(i < j)
+        return i;
+    else
+        return j;
+}
+
+//intersection check instead of fully inside
+int checkCollision(SDL_FRect* r1, SDL_FRect* r2) 
+{
+    int x_left = max(r1->x, r2->x);
+    int x_right = min(r1->x + r1->w, r2->x + r2->w);
+    
+    int y_top = max(r1->y, r2->y);
+    int y_bottom = min(r1->y + r1->h, r2->y + r2->h);
+
+    return ((x_right >= x_left) && (y_bottom >= y_top)); 
+}
