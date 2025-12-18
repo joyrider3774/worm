@@ -76,6 +76,9 @@ There are 5 Game modes to play on, each with their own specifics
 - No obstacles
 - Constant slower speed
 
+## Play in Browser
+You can play the game directly in browser on my [itch.io game page](https://joyrider3774.itch.io/worm/) or [here](https://joyrider3774.github.io/worm/html/) on github
+
 ## Credits
 The game was made possible after watching this youtube movie: [https://www.youtube.com/watch?v=W-3okcjOFnY](https://www.youtube.com/watch?v=W-3okcjOFnY)
 
