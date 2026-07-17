@@ -87,6 +87,11 @@ The game was made possible after watching this youtube movie: [https://www.youtu
 
 ## History
 
+### V1.3
+- Upgraded vendored libs
+- Added macos 26 intel build
+- Added appimages (thanks to shakeyourbunny's appimage creation script)
+
 ### V1.2
 - Fixed 99 levels so people can play same levels
 - RND1 (random level between level 1 & 99)
