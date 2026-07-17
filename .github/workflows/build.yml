@@ -10,23 +10,24 @@ jobs:
     strategy:
       matrix:
         include:
-          - { runson: 'windows-latest',   runsontype: 'windows',    sys: 'mingw64', env: 'x86_64', name: 'Worm', binsuffix: '.exe', }
-          - { runson: 'windows-latest',   runsontype: 'windows',    sys: 'mingw32', env: 'i686',   name: 'Worm', binsuffix: '.exe', }
-          - { runson: 'ubuntu-24.04',     runsontype: 'linux',      sys: 'usr',     env: 'x64',    name: 'Worm', binsuffix: '',     }
-          - { runson: 'ubuntu-22.04',     runsontype: 'linux',      sys: 'usr',     env: 'x64',    name: 'Worm', binsuffix: '',     }
-          - { runson: 'ubuntu-24.04-arm', runsontype: 'linux',      sys: 'usr',     env: 'arm64',  name: 'Worm', binsuffix: '',     }
-          - { runson: 'ubuntu-22.04-arm', runsontype: 'linux',      sys: 'usr',     env: 'arm64',  name: 'Worm', binsuffix: '',     }
-          - { runson: 'macos-13',         runsontype: 'mac',        sys: 'usr',     env: 'intel',  name: 'Worm', binsuffix: '',     }
-          - { runson: 'macos-14',         runsontype: 'mac',        sys: 'usr',     env: 'arm64',  name: 'Worm', binsuffix: '',     }
-          - { runson: 'macos-15',         runsontype: 'mac',        sys: 'usr',     env: 'arm64',  name: 'Worm', binsuffix: '',     }
-          - { runson: 'macos-15-intel',   runsontype: 'mac',        sys: 'usr',     env: 'x64',    name: 'Worm', binsuffix: '',     }          
-          - { runson: 'macos-26',         runsontype: 'mac',        sys: 'usr',     env: 'arm64',  name: 'Worm', binsuffix: '',     }
-          - { runson: 'ubuntu-24.04',     runsontype: 'emscripten', sys: 'usr',     env: 'web',    name: 'Worm', binsuffix: '',     }
+          - { runson: 'windows-latest',   runsontype: 'windows', sys: 'mingw64', env: 'x86_64', name: 'Worm', binsuffix: '.exe', }
+          - { runson: 'windows-latest',   runsontype: 'windows', sys: 'mingw32', env: 'i686',   name: 'Worm', binsuffix: '.exe', }
+          - { runson: 'ubuntu-24.04',     runsontype: 'linux',   sys: 'usr',     env: 'x64',    name: 'Worm', binsuffix: '',     }
+          - { runson: 'ubuntu-22.04',     runsontype: 'linux',   sys: 'usr',     env: 'x64',    name: 'Worm', binsuffix: '',     }          
+          - { runson: 'ubuntu-24.04-arm', runsontype: 'linux',   sys: 'usr',     env: 'arm64',  name: 'Worm', binsuffix: '',     }
+          - { runson: 'ubuntu-22.04-arm', runsontype: 'linux',   sys: 'usr',     env: 'arm64',  name: 'Worm', binsuffix: '',     }
+          - { runson: 'macos-15-intel',   runsontype: 'mac',     sys: 'usr',     env: 'intel',  name: 'Worm', binsuffix: '',     }
+          - { runson: 'macos-26-intel',   runsontype: 'mac',     sys: 'usr',     env: 'intel',  name: 'Worm', binsuffix: '',     }
+          - { runson: 'macos-14',         runsontype: 'mac',     sys: 'usr',     env: 'arm64',  name: 'Worm', binsuffix: '',     }
+          - { runson: 'macos-15',         runsontype: 'mac',     sys: 'usr',     env: 'arm64',  name: 'Worm', binsuffix: '',     }
+          - { runson: 'macos-26',         runsontype: 'mac',     sys: 'usr',     env: 'arm64',  name: 'Worm', binsuffix: '',     }
+          - { runson: 'ubuntu-24.04',     runsontype: 'appimage',sys: '',        env: 'x64',    name: 'Worm', binsuffix: '',     }
+          - { runson: 'ubuntu-22.04-arm', runsontype: 'appimage',sys: '',        env: 'arm64',  name: 'Worm', binsuffix: '',     }
 
     runs-on: ${{matrix.runson}}    
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@@v7
         with:
           submodules: recursive
           
@@ -43,14 +44,14 @@ jobs:
             mingw-w64-${{matrix.env}}-ninja
             
           
-      - if: ${{ matrix.runsontype == 'linux'}}
+      - if: ${{ matrix.runsontype == 'linux' || matrix.runsontype == 'appimage'}}
         name: install libsdl 2/3 dependencies
         run: |
           sudo apt update
-          sudo apt-get install -y libglib2.0-dev libcairo2-dev libpango1.0-dev libsndio-dev libasound2-dev libdbus-1-dev libibus-1.0-dev libjack-dev libdrm-dev libudev-dev libgl1-mesa-dev libgles2-mesa-dev libsndio-dev libwayland-dev libxkbcommon-dev wayland-protocols qtbase5-dev libpulse-dev libsamplerate0-dev libx11-dev libxext-dev libxcursor-dev libxi-dev libxfixes-dev libxrandr-dev libxss-dev libdrm-dev libgbm-dev libwayland-dev libxkbcommon-dev
+          sudo apt-get install -y build-essential cmake git wget patchelf libxtst-dev libglib2.0-dev libcairo2-dev libpango1.0-dev libsndio-dev libasound2-dev libdbus-1-dev libibus-1.0-dev libjack-dev libdrm-dev libudev-dev libgl1-mesa-dev libgles2-mesa-dev libsndio-dev libwayland-dev libxkbcommon-dev wayland-protocols qtbase5-dev libpulse-dev libsamplerate0-dev libx11-dev libxext-dev libxcursor-dev libxi-dev libxfixes-dev libxrandr-dev libxss-dev libdrm-dev libgbm-dev libwayland-dev libxkbcommon-dev
           #try these 1 by 1 as they are different on different ubuntu versions
-          for i in libsndio7.0 libsndio7.1 libsndio7.2 libsndio-dev libasound2-dev libdecor-0-dev libdecoration0-dev libpipewire-0.3-dev libpipewire-dev; do sudo apt-get install -y $i || true; done
-                  
+          for i in libsndio7.0 libsndio7.1 libsndio7.2 libsndio-dev libasound2-dev libdecor-0-dev libdecoration0-dev libpipewire-0.3-dev libpipewire-dev liburing-dev; do sudo apt-get install -y $i || true; done      
+             
       - if: ${{ matrix.runsontype == 'windows'}}
         name: Build Game Windows
         shell: msys2 {0}
@@ -60,13 +61,19 @@ jobs:
           cmake -G "Ninja" -DUSE_VENDORED_SDL=1 ..
           ninja
           
-      - if: ${{ matrix.runsontype != 'windows' && matrix.runsontype != 'emscripten'}}
+      - if: ${{ matrix.runsontype != 'windows' && matrix.runsontype != 'emscripten' && matrix.runsontype != 'appimage'}}
         name: Build Game Other
         run: |
           mkdir build
           cd build      
           cmake -DUSE_VENDORED_SDL=1 ..
           make
+      
+      - if: ${{ matrix.runsontype == 'appimage'}}
+        name: Build Game Appimage
+        run: |
+          chmod +x ./build-appimage.sh
+          ./build-appimage.sh
       
       - if: ${{ matrix.runsontype == 'emscripten'}}
         name: build
@@ -144,7 +151,7 @@ jobs:
         run: |
           codesign --force --deep -s - "./Release/${{matrix.name}}.app"
           
-      - if: ${{ matrix.runsontype != 'mac' && matrix.runsontype != 'emscripten'}}
+      - if: ${{ matrix.runsontype != 'mac' && matrix.runsontype != 'emscripten' && matrix.runsontype != 'appimage'}}
         name: Copy Game And Assets Other
         run: |
           mkdir ./Release
@@ -154,8 +161,16 @@ jobs:
           cp ./README.md "./Release/${{matrix.name}}/"
           cp ./LICENSE "./Release/${{matrix.name}}/"
         
-      - name: Store build
-        uses: actions/upload-artifact@v4
+      - if: ${{ matrix.runsontype != 'appimage'}}
+        name: Store build
+        uses: actions/upload-artifact@v7
         with:
           name: ${{matrix.name}}-${{matrix.runson}}_${{ matrix.env }}
           path: ./Release/
+          
+      - if: ${{ matrix.runsontype == 'appimage'}}
+        name: Store build (appimage)
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{matrix.name}}-${{matrix.runsontype}}_${{ matrix.env }}
+          path: ./dist/
